@@ -1,0 +1,221 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+.app-layout { 
+  display: flex; 
+  height: 100vh; 
+  font-family: 'Plus Jakarta Sans', sans-serif; 
+}
+
+/* SIDEBAR & LOGO */
+.sidebar-fixed { 
+  width: 260px; 
+  background: #FDF5E6; 
+  border-right: 1px solid #e9dfcc; 
+  padding: 40px 20px; 
+  flex-shrink: 0; 
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-logo-container {
+  margin-bottom: 40px;
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+}
+
+.sidebar-logo { 
+  font-size: 26px; 
+  font-weight: 800; 
+  color: #333; 
+}
+
+.nav-stack { display: flex; flex-direction: column; gap: 10px; }
+.nav-btn { background: none; border: none; padding: 16px; text-align: left; border-radius: 12px; cursor: pointer; color: #555; font-family: inherit; font-size: 15px; font-weight: 600; transition: 0.3s;}
+.nav-btn:hover { background: #fdfdfd; color: #FF8C00; }
+.nav-btn.active { background: #FF8C00; color: white; font-weight: 700; box-shadow: 0 4px 12px rgba(255,140,0,0.2); }
+
+/* MAIN VIEWPORT & NAVBAR */
+.viewport-main { 
+  flex: 1; 
+  display: flex; 
+  flex-direction: column; 
+  overflow: hidden; 
+  background: #F0F4F8; 
+}
+
+.navbar-top { 
+  height: 75px; 
+  background: #FFFFFF; 
+  border-bottom: 1px solid #e2e8f0; 
+  display: flex; 
+  align-items: center; 
+  justify-content: flex-end; 
+  padding: 0 40px; 
+  position: relative;
+  z-index: 10; 
+}
+
+.header-right { display: flex; align-items: center; gap: 15px; }
+.greeting { font-size: 15px; color: #333; font-weight: 500;}
+.avatar-circle { width: 40px; height: 40px; background: #FF8C00; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 4px 10px rgba(255,140,0,0.3); transition: 0.2s;}
+.avatar-circle:hover { transform: scale(1.05); }
+
+/* Layout Konten */
+.scroll-viewport { flex: 1; overflow-y: auto; }
+.content-container { padding: 40px; width: 100%; box-sizing: border-box; } 
+.page-title { font-weight: 800; color: #1e293b; margin: 0; font-size: 26px;}
+
+.section-header-inline { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.btn-action-primary { background: #333; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.15);}
+.btn-action-primary:hover { background: #111; transform: translateY(-2px); }
+
+/* SEARCH BAR & FILTER */
+.search-bar-full { width: 100%; margin-bottom: 20px; }
+.search-input-full { width: 100%; padding: 16px 20px; border-radius: 16px; border: 1px solid #cbd5e1; outline: none; font-family: inherit; font-size: 15px; color: #333; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.02); box-sizing: border-box; }
+.search-input-full:focus { border-color: #FF8C00; box-shadow: 0 0 0 4px rgba(255,140,0,0.1); }
+.filter-chips { display: flex; gap: 10px; margin-bottom: 35px; flex-wrap: wrap; }
+
+.nav-btn-filter {
+  background: white; border: 1px solid #cbd5e1; padding: 10px 22px; border-radius: 20px; cursor: pointer; color: #64748b; font-family: inherit; font-size: 14px; transition: all 0.3s ease; text-transform: capitalize; font-weight: 600; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+.nav-btn-filter:hover { border-color: #FF8C00; color: #FF8C00; }
+.nav-btn-filter.active { background: #FF8C00; color: white; border-color: #FF8C00; font-weight: 700; box-shadow: 0 4px 10px rgba(255,140,0,0.2); }
+
+/* KARTU MENU */
+.menu-grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 25px; }
+
+.modern-card { 
+  background: #FFFFFF; border-radius: 20px; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column;
+}
+.modern-card:hover { transform: translateY(-6px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+
+.card-img-container { height: 140px; background: #f1f5f9; position: relative;}
+.card-img-container img { width: 100%; height: 100%; object-fit: cover; }
+.no-image { height: 100%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600; font-size: 12px;}
+
+.card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+.card-header-info { margin-bottom: 8px; }
+
+.kategori-badge { background: rgba(255,140,0,0.1); color: #FF8C00; padding: 5px 12px; border-radius: 15px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+.produk-title { margin: 0 0 4px 0; font-size: 17px; color: #0f172a; font-weight: 800; line-height: 1.3;}
+.toko-text { font-size: 11px; color: #64748b; margin: 0 0 15px 0; font-weight: 500; }
+
+.card-footer-info { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+.price-text { font-size: 18px; font-weight: 800; color: #FF8C00; }
+
+.stock-label { background: #f8fafc; color: #475569; padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid #e2e8f0; }
+
+/* Tombol Aksi */
+.card-action-split { display: flex; border-top: 1px solid #e2e8f0; }
+.btn-edit { flex: 1; background: white; color: #64748b; border: none; padding: 14px; font-weight: 700; cursor: pointer; border-right: 1px solid #e2e8f0; transition: 0.2s; font-family: inherit; font-size: 13px;}
+.btn-edit:hover { background: #f8fafc; color: #FF8C00; }
+.btn-delete { flex: 1; background: white; color: #ef4444; border: none; padding: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; font-family: inherit; font-size: 13px;}
+.btn-delete:hover { background: #fef2f2; }
+
+/* MODALS */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.6); display: flex; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(5px); }
+.profile-modal-content { background: white; width: 90%; max-width: 450px; border-radius: 28px; padding: 40px; position: relative; box-shadow: 0 25px 60px rgba(0,0,0,0.3); text-align: center; }
+.close-modal { background: none; border: none; font-size: 32px; cursor: pointer; color: #94a3b8; position: absolute; top: 20px; right: 30px; transition: 0.2s;}
+.close-modal:hover { color: #0f172a; transform: scale(1.1); }
+.profile-avatar-large { width: 90px; height: 90px; background: #FF8C00; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 36px; margin: 0 auto 20px auto; box-shadow: 0 10px 20px rgba(255,140,0,0.2); }
+.profile-name-large { font-size: 26px; font-weight: 800; color: #0f172a; margin: 0 0 20px 0; }
+.profile-data-list { text-align: left; background: #f8fafc; padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+.profile-data-list p { margin: 12px 0; font-size: 15px; color: #475569; display: flex;}
+.profile-data-list strong { color: #0f172a; width: 80px; display: inline-block;}
+.form-group { display: flex; flex-direction: column; gap: 8px; text-align: left; margin-bottom: 15px; }
+.form-label { font-weight: 700; font-size: 14px; color: #475569; }
+
+/* FIX RESPONSIVE INPUT */
+.form-input { 
+  width: 100%; 
+  max-width: 100%; 
+  padding: 14px 16px; 
+  border-radius: 12px; 
+  border: 1px solid #cbd5e1; 
+  box-sizing: border-box; 
+  font-family: inherit; 
+  font-size: 14px; 
+  background: #f8fafc; 
+  transition: border-color 0.2s; 
+}
+.form-input:focus { outline: none; border-color: #FF8C00; background: white; box-shadow: 0 0 0 3px rgba(255,140,0,0.1); }
+.btn-modal-full { width: 100%; border: none; padding: 16px; border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 15px; margin-top: 10px; font-family: inherit; transition: 0.3s; }
+.btn-logout { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; }
+.btn-logout:hover { background: #fee2e2; }
+
+/* =========================================
+   TOMBOL PILIHAN KATEGORI 
+   ========================================= */
+.kategori-selector {
+  display: flex;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.kategori-btn {
+  flex: 1; /* Lebar tombol dibagi rata */
+  padding: 12px 5px;
+  background-color: #f8fafc;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.kategori-btn:hover {
+  border-color: #FF8C00;
+  color: #FF8C00;
+  background-color: #fff7ed;
+}
+
+.kategori-btn.active {
+  background-color: #FF8C00;
+  color: white;
+  border-color: #FF8C00;
+  box-shadow: 0 4px 10px rgba(255, 140, 0, 0.2);
+}
+
+/* =========================================
+   PERBAIKAN TAMPILAN MOBILE (HP)
+   ========================================= */
+@media screen and (max-width: 768px) {
+  .profile-modal-content {
+    width: 95%; 
+    padding: 25px 20px; 
+    max-height: 90vh; 
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Wadah scroll internal untuk konten form agar rapi */
+  .form-scroll-container {
+    overflow-y: auto; 
+    padding-right: 5px; 
+  }
+
+  .close-modal {
+    top: 15px;
+    right: 15px;
+    font-size: 28px;
+  }
+
+  /* Jika layar HP sangat sempit, tombol kategori otomatis susun ke bawah */
+  .kategori-selector {
+    flex-wrap: wrap; 
+  }
+  .kategori-btn {
+    min-width: 80px;
+  }
+}/* Menghias teks contoh (placeholder) agar abu-abu dan miring */
+.form-input::placeholder {
+  color: #94a3b8;
+  font-style: italic;
+  font-weight: 400;
+}

@@ -1,0 +1,255 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+.content-container {
+  padding: 30px 40px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 20px 0;
+  color: #1e293b;
+}
+
+/* ==========================================
+   NOTIFIKASI
+========================================== */
+.notification-success {
+  background: #d4edda;
+  color: #155724;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #c3e6cb;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.notification-error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #f5c6cb;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* ==========================================
+   TAB NAVIGASI
+========================================== */
+.tab-container {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.tab-button.active {
+  background: #FF8C00;
+  color: white;
+  box-shadow: 0 4px 10px rgba(255,140,0,0.25);
+}
+
+.tab-button:hover:not(.active) {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+/* ==========================================
+   TABEL — DESKTOP
+========================================== */
+.riwayat-table-wrapper {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.modern-table th {
+  background: #fdfaf5;
+  padding: 16px 20px;
+  text-align: left;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.modern-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.modern-table tbody tr:last-child td { border-bottom: none; }
+.modern-table tbody tr:hover { background-color: #fafafa; }
+
+/* Lebar kolom tetap */
+.modern-table th:nth-child(1), .modern-table td:nth-child(1) { width: 110px; }
+.modern-table th:nth-child(2), .modern-table td:nth-child(2) { width: 130px; }
+.modern-table th:nth-child(3), .modern-table td:nth-child(3) { width: auto; }
+.modern-table th:nth-child(4), .modern-table td:nth-child(4) { width: 120px; }
+.modern-table th:nth-child(5), .modern-table td:nth-child(5) { width: 140px; }
+.modern-table th:nth-child(6), .modern-table td:nth-child(6) { width: 110px; }
+.modern-table th:nth-child(7), .modern-table td:nth-child(7) { width: 150px; text-align: left; }
+
+/* ==========================================
+   STATUS BADGE
+========================================== */
+.status-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 12px;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.status-badge.menunggu { background: #fff3cd; color: #856404; }
+.status-badge.diproses { background: #cfe2ff; color: #0a58ca; }
+.status-badge.selesai { background: #d4edda; color: #155724; }
+.status-badge.dibatalkan, 
+.status-badge.ditolak { background: #f8d7da; color: #721c24; }
+
+/* ==========================================
+   TOMBOL AKSI (Selesaikan / Tolak)
+========================================== */
+.btn-aksi {
+  border: none;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 12px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-selesaikan {
+  background: #3b82f6;
+  color: white;
+  box-shadow: 0 2px 6px rgba(59,130,246,0.25);
+}
+.btn-selesaikan:hover:not(:disabled) { background: #2563eb; transform: translateY(-1px); }
+
+.btn-tolak {
+  background: #ef4444;
+  color: white;
+  box-shadow: 0 2px 6px rgba(239,68,68,0.25);
+}
+.btn-tolak:hover:not(:disabled) { background: #dc2626; transform: translateY(-1px); }
+
+.btn-aksi:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+.empty-state {
+  text-align: center;
+  padding: 50px 20px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* ==========================================
+   CARD LIST — MOBILE 
+========================================== */
+.riwayat-card-list {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.riwayat-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.riwayat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.riwayat-card-id { font-weight: 800; font-size: 14px; color: #0f172a; }
+
+.riwayat-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.riwayat-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 13px;
+}
+
+.riwayat-card-label { color: #94a3b8; font-weight: 600; flex-shrink: 0; margin-right: 10px; min-width: 80px; }
+.riwayat-card-value { color: #334155; font-weight: 600; text-align: right; word-break: break-word; }
+.riwayat-card-value.harga { color: #FF8C00; font-weight: 800; }
+
+.riwayat-card-footer {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 12px;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+@media (max-width: 768px) {
+  .content-container { padding: 20px 16px; }
+  .page-title { font-size: 20px; }
+  .riwayat-table-wrapper { display: none; }
+  .riwayat-card-list { display: flex; }
+
+  .tab-button {
+    font-size: 12px;
+    padding: 9px 14px;
+    flex: 1;
+    text-align: center;
+  }
+}
+
+@media (min-width: 769px) {
+  .riwayat-card-list { display: none !important; }
+}

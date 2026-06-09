@@ -1,0 +1,335 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+.content-container-full {
+  padding: 30px 40px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.balance-full-width-wrapper {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ==========================================
+   HERO CARD SALDO (SAMA SEPERTI PEMBELI)
+========================================== */
+.balance-card-hero {
+  background: #FF8C00;
+  color: white;
+  padding: 50px 40px;
+  border-radius: 24px;
+  text-align: center;
+  margin-bottom: 20px;
+  box-shadow: 0 12px 30px rgba(255, 140, 0, 0.3);
+  overflow: hidden;
+}
+
+.balance-card-hero p {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+.balance-card-hero h1 {
+  font-size: clamp(32px, 8vw, 60px);
+  margin: 0;
+  font-weight: 800;
+  line-height: 1.1;
+  word-break: break-word;
+}
+
+/* ==========================================
+   CARD ACTION (TARIK DANA)
+========================================== */
+.finance-action-card {
+  background: white;
+  padding: 28px 30px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  margin-bottom: 30px;
+}
+
+.finance-action-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.finance-action-card h3 {
+  font-size: 18px;
+  margin: 0 0 6px 0;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.finance-action-card p {
+  color: #94a3b8;
+  margin: 0;
+  font-size: 13px;
+}
+
+.btn-buat-request {
+  padding: 11px 22px;
+  background: #FF8C00;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba(255, 140, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.btn-buat-request:hover {
+  background: #e67e00;
+  transform: translateY(-1px);
+}
+
+/* ==========================================
+   TABEL RIWAYAT — DESKTOP
+========================================== */
+.finance-table-wrapper {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.finance-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.finance-table th {
+  background: #fff8f0;
+  padding: 14px 20px;
+  text-align: left;
+  color: #FF8C00;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.finance-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.finance-table tbody tr:last-child td { border-bottom: none; }
+.finance-table tbody tr:hover { background: #fafafa; }
+
+/* Lebar kolom spesifik agar rapi */
+.finance-table th:nth-child(1), .finance-table td:nth-child(1) { width: 140px; }
+.finance-table th:nth-child(2), .finance-table td:nth-child(2) { width: 160px; }
+.finance-table th:nth-child(3), .finance-table td:nth-child(3) { width: auto; }
+.finance-table th:nth-child(4), .finance-table td:nth-child(4) { width: 150px; text-align: left; }
+.finance-table th:nth-child(5), .finance-table td:nth-child(5) { width: 150px; text-align: center; }
+
+/* ==========================================
+   STATUS BADGE
+========================================== */
+.finance-status-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.finance-status-badge.menunggu { background: #fff3cd; color: #856404; }
+.finance-status-badge.disetujui { background: #d4edda; color: #155724; }
+.finance-status-badge.ditolak { background: #f8d7da; color: #721c24; }
+
+/* ==========================================
+   CARD LIST — MOBILE
+========================================== */
+.finance-card-list {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.finance-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.finance-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.finance-card-id { font-weight: 800; font-size: 14px; color: #0f172a; }
+
+.finance-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.finance-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.finance-card-label { color: #94a3b8; font-weight: 600; }
+.finance-card-value { color: #334155; font-weight: 700; text-align: right; }
+.finance-card-value.nominal { font-size: 15px; }
+
+/* ==========================================
+   EMPTY STATE
+========================================== */
+.finance-empty {
+  padding: 40px 20px;
+  text-align: center;
+  background: #f8fafc;
+  border-radius: 16px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* ==========================================
+   MODAL TARIK SALDO
+========================================== */
+.modal-overlay-finance {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  backdrop-filter: blur(4px);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-box-finance {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+}
+
+.modal-box-finance h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.modal-box-finance p {
+  color: #64748b;
+  font-size: 13px;
+  margin: 0 0 20px 0;
+}
+
+.modal-info-box {
+  background: #fff8f0;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #fed7aa;
+}
+
+.modal-info-label { margin: 0 0 5px 0 !important; color: #ea580c !important; font-size: 12px !important; font-weight: 600; }
+.modal-info-value { margin: 0 !important; font-size: 18px !important; font-weight: 800; color: #ea580c !important; }
+
+.modal-input-finance {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-size: 16px;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.modal-input-finance:focus { border-color: #FF8C00; }
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-modal-cancel {
+  flex: 1;
+  padding: 13px;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: inherit;
+  color: #64748b;
+  transition: background 0.2s;
+}
+.btn-modal-cancel:hover { background: #e2e8f0; }
+
+.btn-modal-submit {
+  flex: 1;
+  padding: 13px;
+  background: #FF8C00;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: inherit;
+  transition: background 0.2s;
+  box-shadow: 0 4px 10px rgba(255, 140, 0, 0.3);
+}
+.btn-modal-submit:hover { background: #e67e00; }
+
+/* ==========================================
+   MOBILE RESPONSIVE
+========================================== */
+@media (max-width: 768px) {
+  .content-container-full { padding: 20px 16px; }
+  .balance-card-hero { padding: 36px 24px; border-radius: 18px; }
+  .finance-action-card { padding: 20px; border-radius: 16px; }
+  
+  .finance-action-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 14px;
+  }
+  .btn-buat-request { width: 100%; text-align: center; }
+
+  /* Sembunyikan tabel, tampilkan card mobile */
+  .finance-table-wrapper { display: none; }
+  .finance-card-list { display: flex; }
+}
+
+@media (min-width: 769px) {
+  .finance-card-list { display: none !important; }
+}

@@ -1,0 +1,383 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+.detail-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  box-sizing: border-box;
+}
+
+/* Tombol Kembali Atas */
+.btn-back-global {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 20px;
+  transition: color 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-back-global:hover {
+  color: #FF8C00;
+}
+
+/* Main Layout Card */
+.detail-card-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  background: white;
+  border-radius: 24px;
+  padding: 30px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+/* Kolom Kiri: Gambar */
+.detail-img-section {
+  width: 100%;
+}
+
+.detail-main-image {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+}
+
+.detail-image-placeholder {
+  width: 100%;
+  height: 420px;
+  background: #f1f5f9;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #94a3b8;
+}
+
+/* Kolom Rerata Bintang */
+.star-wrapper {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+
+/* Kolom Kanan: Informasi */
+.detail-info-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-badge-kategori {
+  background: #fff1e6;
+  color: #ea580c;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  align-self: flex-start;
+  margin-bottom: 12px;
+}
+
+.info-nama-produk {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+  line-height: 1.2;
+}
+
+.info-pemilik-toko {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 16px 0;
+}
+
+.owner-highlight {
+  color: #334155;
+  font-weight: 700;
+}
+
+/* Rating Row */
+.info-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.rating-avg-box {
+  background: #fff8f0;
+  color: #FF8C00;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.rating-count-text {
+  font-size: 14px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.detail-divider {
+  border: none;
+  border-top: 1px solid #f1f5f9;
+  margin: 0 0 20px 0;
+}
+
+/* Harga & Stok */
+.info-price-stock-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fafafa;
+  padding: 16px 20px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+}
+
+.price-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-label {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.price-number {
+  font-size: 26px;
+  font-weight: 800;
+  color: #FF8C00;
+  margin: 2px 0 0 0;
+}
+
+.stock-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+}
+.stock-badge.safe { background: #e0f2fe; color: #0369a1; }
+.stock-badge.low { background: #fef3c7; color: #b45309; }
+.stock-badge.out { background: #fee2e2; color: #b91c1c; }
+
+/* Deskripsi */
+.info-deskripsi-box {
+  margin-bottom: 25px;
+}
+
+.info-deskripsi-box h4 {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.info-deskripsi-box p {
+  margin: 0;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+/* Tombol Cart */
+.btn-action-cart {
+  background: #FF8C00;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(255, 140, 0, 0.2);
+}
+
+.btn-action-cart:hover:not(:disabled) {
+  background: #e07b00;
+  transform: translateY(-2px);
+}
+
+.btn-action-cart:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ==========================================
+   SECTION LIST ULASAN (READ ONLY)
+========================================== */
+.detail-reviews-section {
+  margin-top: 40px;
+}
+
+.reviews-section-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 20px;
+}
+
+.reviews-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.reviews-empty-box {
+  background: #f8fafc;
+  color: #64748b;
+  text-align: center;
+  padding: 30px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px dashed #cbd5e1;
+}
+
+.review-item-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.review-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.reviewer-profile-flex {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reviewer-avatar-circle {
+  width: 40px;
+  height: 40px;
+  background: #fff8f0;
+  color: #FF8C00;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 16px;
+  border: 1px solid #ffe3cc;
+}
+
+.reviewer-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.reviewer-name {
+  margin: 0 0 2px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.reviewer-stars-flex {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.review-timestamp {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.review-body-text {
+  margin: 0;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+  font-style: italic;
+  padding-left: 52px; /* Menyelaraskan teks di bawah nama setelah avatar */
+}
+
+/* ==========================================
+   LOADING SPINNER CONFIG
+========================================== */
+.detail-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.detail-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f1f5f9;
+  border-top-color: #FF8C00;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================
+   RESPONSIVE LAYOUT (MOBILE FRIENDLY)
+========================================== */
+@media (max-width: 768px) {
+  .detail-container {
+    padding: 15px 12px;
+  }
+  
+  .detail-card-layout {
+    grid-template-columns: 1fr; /* Menumpuk satu kolom ke bawah pada HP */
+    gap: 24px;
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .detail-main-image, .detail-image-placeholder {
+    height: 280px; /* Ukuran gambar diperkecil agar pas di HP */
+  }
+
+  .info-nama-produk {
+    font-size: 24px;
+  }
+
+  .price-number {
+    font-size: 22px;
+  }
+
+  .review-body-text {
+    padding-left: 0;
+    margin-top: 10px; /* Di HP teks ulasan kembali rapat kiri */
+  }
+}
