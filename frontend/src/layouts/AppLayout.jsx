@@ -2,13 +2,15 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ConfirmationModal from '../components/ConfirmationModal';
+import NotificationBadge from '../components/NotificationBadge';
+import useOrderNotification from '../hooks/useOrderNotification';
 import '../pages/Pembeli/DashboardPembeli.css';
 
 const AppLayout = ({ children, role, navigationItems }) => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // STATE BARU: Jika layar lebar (PC) sidebar terbuka, jika layar sempit (HP) sidebar tertutup
+  // Dari Codingan 1: State responsif untuk layout PC/HP
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
 
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -16,6 +18,9 @@ const AppLayout = ({ children, role, navigationItems }) => {
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
+  
+  // Dari Codingan 2: State badge notifikasi untuk penjual
+  const [pendingOrderCount, setPendingOrderCount] = useState(0);
   
   const [user, setUser] = useState(() => {
     return JSON.parse(localStorage.getItem('user')) || { username: 'Guest', id: null, saldo: 0, role };
@@ -42,7 +47,7 @@ const AppLayout = ({ children, role, navigationItems }) => {
     }, 300);
   };
 
-  // PERBAIKAN: Gunakan functional update pada setUser dan hapus 'user' dari dependency
+  // Dari Codingan 1: Menggunakan functional update untuk mencegah re-render berlebih
   const fetchUserBalance = useCallback(async () => {
     if (!user.id) return;
     try {
@@ -58,13 +63,13 @@ const AppLayout = ({ children, role, navigationItems }) => {
     } catch (err) {
       if (err.response && err.response.status === 401) handleLogout();
     }
-  }, [user.id]); // Hanya bergantung pada user.id agar tidak memicu render terus-menerus
+  }, [user.id]);
 
   useEffect(() => {
     fetchUserBalance();
   }, [fetchUserBalance]); 
 
-  // Agar saat ukuran layar diubah manual (resize), sidebar menyesuaikan
+  // Dari Codingan 1 & 2: Handler resize layar untuk Sidebar
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth <= 768) setIsSidebarOpen(false);
@@ -73,6 +78,25 @@ const AppLayout = ({ children, role, navigationItems }) => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Dari Codingan 2: Callback order baru
+  const handleNewOrder = useCallback((pendingOrders, newCount) => {
+    setPendingOrderCount(pendingOrders.length);
+  }, []);
+
+  // Dari Codingan 2: Hook notifikasi real-time khusus penjual
+  useOrderNotification({
+    userId: user.id,
+    role: role,
+    onNewOrder: handleNewOrder,
+  });
+
+  // Dari Codingan 2: Reset otomatis badge saat membuka halaman pesanan penjual
+  useEffect(() => {
+    if (role === 'penjual' && location.pathname === '/penjual/pesanan') {
+      setPendingOrderCount(0);
+    }
+  }, [location.pathname, role]);
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -104,15 +128,17 @@ const AppLayout = ({ children, role, navigationItems }) => {
     setEditMode(false);
   };
 
-  // PERBAIKAN: Hapus object 'user' dari dependency array agar input tidak kereset saat mengetik
-  useEffect(() => {
-    if (editMode) {
-      setTempUsername(user.username);
-      setTempEmail(user.email || '');
-    }
-  }, [editMode]);
+  // Dari Codingan 1: Dependency array aman (tidak meriset input saat mengetik)
+  const { username: currentUsername, email: currentEmail } = user;
 
-  // Fungsi navigasi khusus: Pindah halaman + Tutup sidebar jika di HP
+  useEffect(() => {
+  if (editMode) {
+    setTempUsername(currentUsername);
+    setTempEmail(currentEmail || '');
+  }
+  }, [editMode, currentUsername, currentEmail]);
+
+  // Dari Codingan 1: Otomatis menutup sidebar jika link diklik pada tampilan mobile
   const handleNavigation = (path) => {
     navigate(path);
     if (window.innerWidth <= 768) {
@@ -123,7 +149,7 @@ const AppLayout = ({ children, role, navigationItems }) => {
   return (
     <div className="app-layout">
       
-      {/* OVERLAY GELAP UNTUK MOBILE (Klik di luar area sidebar untuk menutup) */}
+      {/* OVERLAY GELAP UNTUK MOBILE */}
       <div 
         className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`}
         onClick={() => setIsSidebarOpen(false)}
@@ -137,8 +163,21 @@ const AppLayout = ({ children, role, navigationItems }) => {
               key={idx}
               className={`nav-btn ${location.pathname === item.path ? 'active' : ''}`} 
               onClick={() => handleNavigation(item.path)}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
             >
-              {item.label}
+              <span>{item.label}</span>
+              
+              {/* Dari Codingan 2: Badge Notifikasi Menu di Sidebar */}
+              {role === 'penjual' && item.path === '/penjual/pesanan' && pendingOrderCount > 0 && (
+                <span style={{
+                  background: '#ef4444', color: 'white', fontSize: '11px',
+                  fontWeight: '800', minWidth: '18px', height: '18px',
+                  borderRadius: '100px', display: 'inline-flex',
+                  alignItems: 'center', justifyContent: 'center', padding: '0 5px'
+                }}>
+                  {pendingOrderCount > 9 ? '9+' : pendingOrderCount}
+                </span>
+              )}
             </button>
           ))}
           <button className="nav-btn" onClick={handleLogout} style={{marginTop: 'auto', color: '#e74c3c'}}>Keluar Akun</button>
@@ -156,6 +195,17 @@ const AppLayout = ({ children, role, navigationItems }) => {
           </button>
 
           <div className="navbar-right">
+            {/* Dari Codingan 2: Icon/Badge Notifikasi di Navbar utama */}
+            {role === 'penjual' && (
+              <div
+                onClick={() => handleNavigation('/penjual/pesanan')}
+                style={{ cursor: 'pointer', padding: '4px 8px' }}
+                title={pendingOrderCount > 0 ? `${pendingOrderCount} pesanan baru` : 'Tidak ada pesanan baru'}
+              >
+                <NotificationBadge count={pendingOrderCount} />
+              </div>
+            )}
+
             <div style={{display:'flex', flexDirection:'column', textAlign: 'right'}}>
               <span className="greeting">Halo, <strong>{user.username}</strong></span>
               {user.role === 'pembeli' && (
@@ -211,6 +261,7 @@ const AppLayout = ({ children, role, navigationItems }) => {
                     cursor: 'pointer',
                     fontWeight: 'bold',
                     fontSize: '15px',
+                    fontFamily: 'inherit',
                     transition: 'all 0.3s ease',
                     boxShadow: '0 2px 8px rgba(255, 140, 0, 0.3)'
                   }}
@@ -282,6 +333,7 @@ const AppLayout = ({ children, role, navigationItems }) => {
                         cursor: updateLoading ? 'not-allowed' : 'pointer',
                         fontWeight: 'bold',
                         fontSize: '14px',
+                        fontFamily: 'inherit',
                         transition: 'all 0.3s ease',
                         boxShadow: updateLoading ? 'none' : '0 2px 8px rgba(255, 140, 0, 0.3)'
                       }}
@@ -304,6 +356,7 @@ const AppLayout = ({ children, role, navigationItems }) => {
                         cursor: updateLoading ? 'not-allowed' : 'pointer',
                         fontWeight: 'bold',
                         fontSize: '14px',
+                        fontFamily: 'inherit',
                         transition: 'all 0.3s ease'
                       }}
                       onMouseOver={(e) => !updateLoading && (e.target.style.background = '#e8e8e8')}

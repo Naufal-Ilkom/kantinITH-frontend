@@ -16,6 +16,7 @@ import TransaksiAdmin from './pages/Admin/TransaksiAdmin.jsx';
 import PesananPenjual from './pages/Penjual/PesananPenjual.jsx';
 import PendapatanPenjual from './pages/Penjual/PendapatanPenjual.jsx';
 import AppLayout from './layouts/AppLayout.jsx';
+import NotFound from './pages/NotFound.jsx';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -143,7 +144,7 @@ function App() {
         <Route path="/admin/dashboard" element={<Navigate to="/admin/pengguna" replace />} />
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
