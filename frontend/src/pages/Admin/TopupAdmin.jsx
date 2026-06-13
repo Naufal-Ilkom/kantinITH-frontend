@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { formatDate } from '../../utils/dateFormatter';
 import './TopupAdmin.css';
@@ -13,16 +13,11 @@ const TopupAdmin = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   const token = localStorage.getItem('accessToken');
+  // Memasukkan config ke dalam useMemo atau membiarkannya, namun agar aman dengan useCallback, kita definisikan ulang di dalam atau dipastikan dependensinya konstan
   const config = { headers: { Authorization: `Bearer ${token}` } };
 
-  useEffect(() => {
-    fetchTopupRequests();
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [filterStatus]);
-
-  const fetchTopupRequests = async () => {
+  // PERBAIKAN: Membungkus fungsi dengan useCallback dan menambahkan dependensi yang diperlukan
+  const fetchTopupRequests = useCallback(async () => {
     try {
       setLoading(true);
       const url = filterStatus === 'semua'
@@ -35,22 +30,37 @@ const TopupAdmin = () => {
     } finally {
       setLoading(false);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterStatus]); // Mengikuti perubahan filterStatus untuk mengambil data baru
+
+  // PERBAIKAN: Menambahkan fetchTopupRequests ke dalam dependency array useEffect
+  useEffect(() => {
+    fetchTopupRequests();
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [fetchTopupRequests]);
 
   const handleApprove = async (id) => {
     try {
       await axios.patch(`http://localhost:5000/api/topup-approve/${id}`, { catatan_admin: catatan }, config);
       alert('Topup berhasil disetujui!');
-      closeModal(); fetchTopupRequests();
-    } catch { alert('Gagal menyetujui topup'); }
+      closeModal(); 
+      fetchTopupRequests();
+    } catch { 
+      alert('Gagal menyetujui topup'); 
+    }
   };
 
   const handleReject = async (id) => {
     try {
       await axios.patch(`http://localhost:5000/api/topup-reject/${id}`, { catatan_admin: catatan }, config);
       alert('Topup berhasil ditolak!');
-      closeModal(); fetchTopupRequests();
-    } catch { alert('Gagal menolak topup'); }
+      closeModal(); 
+      fetchTopupRequests();
+    } catch { 
+      alert('Gagal menolak topup'); 
+    }
   };
 
   const openModal = (request, action) => {
@@ -81,7 +91,7 @@ const TopupAdmin = () => {
 
   const StatusBadge = ({ status }) => {
     const map = {
-      menunggu:  { label: '⏳ Menunggu', color: '#f59e0b', bg: '#fef3c7' },
+      menunggu:   { label: '⏳ Menunggu', color: '#f59e0b', bg: '#fef3c7' },
       disetujui: { label: '✓ Disetujui', color: '#10b981', bg: '#d1fae5' },
       ditolak:   { label: '✗ Ditolak',   color: '#ef4444', bg: '#fee2e2' },
     };

@@ -20,6 +20,7 @@ const { verifyToken } = require('./middleware/auth');
 const menuRoutes = require('./routes/menuRoutes');
 const orderRoutes = require('./routes/orderRoutes'); 
 const topupRoutes = require('./routes/topupRoutes'); 
+const midtransRoutes = require('./routes/midtransRoutes');
 
 const app = express();
 
@@ -318,6 +319,7 @@ app.put('/api/reset-password', async (req, res) => {
 app.use('/api/menu', menuRoutes);
 app.use('/api', orderRoutes); 
 app.use('/api', topupRoutes); 
+app.use('/api/topup', midtransRoutes);
 
 app.get('/api/users/:id', verifyToken, async (req, res) => {
     try {

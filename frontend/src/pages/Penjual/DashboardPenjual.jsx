@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './DashboardPenjual.css';
 
@@ -28,7 +28,8 @@ const DashboardPenjual = ({ user }) => {
     };
   };
 
-  const fetchMenu = async () => {
+  // PERBAIKAN: Membungkus fungsi dengan useCallback dan menambahkan dependensi ID Penjual
+  const fetchMenu = useCallback(async () => {
     try {
       const res = await axios.get(`http://127.0.0.1:5000/api/menu?id_penjual=${userFromStorage.id}`, getTokenConfig());
       setKatalogMenu(res.data);
@@ -38,11 +39,13 @@ const DashboardPenjual = ({ user }) => {
         alert("Sesi Anda telah habis atau Token tidak valid. Silakan login kembali.");
       }
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userFromStorage.id]); 
 
+  // PERBAIKAN: Memasukkan fetchMenu ke dalam dependency array useEffect secara aman
   useEffect(() => {
     fetchMenu();
-  }, []);
+  }, [fetchMenu]);
 
   const filteredMenu = katalogMenu.filter(item => {
     const matchKategori = filterKategori === 'Semua' || item.kategori.toLowerCase() === filterKategori.toLowerCase();
