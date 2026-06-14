@@ -84,11 +84,17 @@ app.post('/api/register', async (req, res) => {
 });
 
 // ==========================================
-// LOGIN
+// LOGIN (TELAH DIPERBAIKI UNTUK REGRESSION TESTING)
 // ==========================================
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
+
+        // 1. TAMBAHKAN VALIDASI INPUT BERIKUT AGAR TIDAK MEMICU ERROR UNDEFINED PADA JEST
+        if (!username || !password) {
+            return res.status(401).json({ success: false, message: 'Username dan password wajib diisi' });
+        }
+
         const user = await User.findOne({ where: { username, password } });
 
         if (user) {

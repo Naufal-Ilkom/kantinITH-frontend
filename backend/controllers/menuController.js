@@ -111,20 +111,14 @@ exports.createMenu = async (req, res) => {
     try {
         const { nama_produk, harga, stok, kategori, gambar, id_penjual } = req.body;
         
-        if (!id_penjual) {
-            return res.status(400).json({ success: false, message: "ID Penjual wajib ada!" });
+        // Validasi dasar
+        if (!nama_produk || !id_penjual) {
+            return res.status(400).json({ success: false, message: "Data tidak lengkap!" });
         }
 
-        await Menu.create({ 
-            nama_produk, 
-            harga, 
-            stok, 
-            kategori, 
-            gambar, 
-            id_penjual 
-        });
+        await Menu.create({ nama_produk, harga, stok, kategori, gambar, id_penjual });
         
-        res.json({ success: true, message: "Menu berhasil ditambahkan!" });
+        res.status(201).json({ success: true, message: "Menu berhasil ditambahkan!" });
     } catch (err) {
         console.error("DEBUG ERROR CREATE:", err);
         res.status(500).json({ success: false, message: "Gagal menambah menu" });
@@ -157,7 +151,12 @@ exports.updateMenu = async (req, res) => {
 // DELETE: Hapus menu (Penjual) - PROTECTED
 exports.deleteMenu = async (req, res) => {
     try {
-        const { id_penjual } = req.query;
+        // GANTI req.query menjadi req.body
+        const { id_penjual } = req.body; 
+
+        if (!id_penjual) {
+            return res.status(400).json({ success: false, message: "ID Penjual diperlukan!" });
+        }
 
         const deletedRows = await Menu.destroy({ 
             where: { 
@@ -167,7 +166,7 @@ exports.deleteMenu = async (req, res) => {
         });
 
         if (deletedRows === 0) {
-            return res.status(403).json({ success: false, message: "Gagal hapus: Anda bukan pemilik menu ini!" });
+            return res.status(404).json({ success: false, message: "Menu tidak ditemukan atau akses ditolak!" });
         }
 
         res.json({ success: true, message: "Menu berhasil dihapus!" });
