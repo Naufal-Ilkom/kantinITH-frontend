@@ -1,0 +1,32 @@
+name: Backend CI Tests
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x] # Menggunakan versi Node.js yang stabil
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install dependencies
+      working-directory: ./backend # Memastikan perintah dijalankan di folder backend
+      run: npm install
+
+    - name: Run automated tests with coverage
+      working-directory: ./backend
+      run: npm run test:coverage
