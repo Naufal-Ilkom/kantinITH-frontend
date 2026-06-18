@@ -40,7 +40,7 @@ const User = sequelize.define('User', {
         allowNull: true
     },
     is_active: {
-        type: DataTypes.TINYINT, // atau DataTypes.BOOLEAN
+        type: DataTypes.INTEGER, // Diubah dari TINYINT ke INTEGER karena PostgreSQL tidak dukung TINYINT
         defaultValue: 1
     }
 }, {

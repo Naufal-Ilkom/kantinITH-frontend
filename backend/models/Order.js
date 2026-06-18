@@ -31,7 +31,7 @@ const Order = sequelize.define('Order', {
         allowNull: true
     },
     status: {
-        type: DataTypes.ENUM('menunggu', 'diproses', 'selesai', 'dibatalkan', 'ditolak'),
+        type: DataTypes.STRING, // Diubah ke STRING karena PostgreSQL sering bermasalah dengan ENUM saat alter:true
         defaultValue: 'menunggu'
     }
 }, {

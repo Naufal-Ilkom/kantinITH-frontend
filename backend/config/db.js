@@ -8,8 +8,15 @@ const sequelize = new Sequelize(
   process.env.DB_PASSWORD, // Password
   {
     host: process.env.DB_HOST, // localhost
-    dialect: 'mysql',          // Kita pakai MySQL
+    port: process.env.DB_PORT || 5432, // Port default PostgreSQL (Supabase: 5432 atau 6543)
+    dialect: 'postgres',       // Ganti dialect ke postgres
     logging: false,            // Agar terminal tidak penuh log SQL
+    dialectOptions: process.env.DB_SSL === 'true' ? {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false // Supabase biasanya membutuhkan false jika CA cert tidak disertakan eksplisit
+      }
+    } : {}
   }
 );
 
@@ -17,13 +24,10 @@ const sequelize = new Sequelize(
 const connectDB = async () => {
   try {
     await sequelize.authenticate(); // Mencoba terhubung
-    console.log('✅ Database MySQL Terhubung melalui Sequelize!');
+    console.log('✅ Database PostgreSQL (Supabase) Terhubung melalui Sequelize!');
     
-    // Sync database dengan model - jangan alter untuk hindari foreign key conflict
-    await sequelize.sync({ force: false, alter: false });
-    console.log('✅ Database tables synchronized!');
   } catch (error) {
-    console.error('❌ Gagal koneksi database:', error.message);
+    console.error('❌ Gagal koneksi database:', error);
     // Lanjutkan meski sync gagal
   }
 };
