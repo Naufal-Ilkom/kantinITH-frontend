@@ -1,4 +1,5 @@
 const midtransClient = require('midtrans-client');
+const crypto = require('crypto');
 const User = require('../models/User');
 const Topup = require('../models/Topup');
 
@@ -99,12 +100,22 @@ exports.handleMidtransNotification = async (req, res) => {
   try {
     const notification = req.body;
 
-    // Verifikasi notifikasi dari Midtrans (mencegah pemalsuan)
-    const statusResponse = await snap.transaction.notification(notification);
+    const orderId            = notification.order_id;
+    const transactionStatus  = notification.transaction_status;
+    const fraudStatus        = notification.fraud_status;
+    const statusCode         = notification.status_code;
+    const grossAmount        = notification.gross_amount;
+    const signatureKey       = notification.signature_key;
 
-    const orderId            = statusResponse.order_id;
-    const transactionStatus  = statusResponse.transaction_status;
-    const fraudStatus        = statusResponse.fraud_status;
+    // 1. Verifikasi Signature secara Manual (Sangat penting di Vercel agar tidak Timeout/502)
+    const serverKey = process.env.MIDTRANS_SERVER_KEY;
+    const hashInput = orderId + statusCode + grossAmount + serverKey;
+    const expectedHash = crypto.createHash('sha512').update(hashInput).digest('hex');
+
+    if (signatureKey !== expectedHash) {
+      console.error('🚨 Invalid Midtrans Signature!');
+      return res.status(403).json({ message: 'Invalid signature' });
+    }
 
     console.log(`📩 Notifikasi Midtrans: order=${orderId} | status=${transactionStatus} | fraud=${fraudStatus}`);
 
