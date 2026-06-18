@@ -1,4 +1,5 @@
 const { Sequelize } = require('sequelize');
+const pg = require('pg');
 require('dotenv').config();
 
 // 1. Inisialisasi Objek Sequelize
@@ -10,6 +11,7 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST, // localhost
     port: process.env.DB_PORT || 5432, // Port default PostgreSQL (Supabase: 5432 atau 6543)
     dialect: 'postgres',       // Ganti dialect ke postgres
+    dialectModule: pg,         // Memaksa Vercel menyertakan driver pg di serverless
     logging: false,            // Agar terminal tidak penuh log SQL
     dialectOptions: process.env.DB_SSL === 'true' ? {
       ssl: {
