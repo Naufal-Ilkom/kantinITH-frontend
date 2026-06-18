@@ -32,6 +32,13 @@ app.use(express.json());
 connectDB();
 
 // ==========================================
+// ROOT ENDPOINT (Agar tidak Cannot GET / di Vercel)
+// ==========================================
+app.get('/', (req, res) => {
+    res.send('API KantinITH Backend is running perfectly! 🚀');
+});
+
+// ==========================================
 // SETUP RATE LIMITER (DIMATIKAN SEMENTARA UNTUK TESTING)
 // ==========================================
 const apiLimiter = rateLimit({
