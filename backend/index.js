@@ -239,11 +239,9 @@ app.post('/api/lupa-password', async (req, res) => {
             { where: { id: user.id } }
         );
 
-        // Konfigurasi nodemailer menggunakan parameter file .env Anda
+        // GUNAKAN KODE INI (Lebih aman untuk Gmail)
         const transporter = nodemailer.createTransport({
-            host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-            port: parseInt(process.env.EMAIL_PORT, 10) || 465,
-            secure: process.env.EMAIL_PORT == 465,
+            service: 'gmail',
             auth: {
                 user: process.env.EMAIL_USER, 
                 pass: process.env.EMAIL_PASS  
