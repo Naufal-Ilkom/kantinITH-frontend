@@ -54,13 +54,13 @@ const apiLimiter = rateLimit({
 
 
 // ==========================================
-// REGISTER (VALIDATOR DIMATIKAN SEMENTARA)
+// REGISTER
 // ==========================================
 app.post('/api/register', async (req, res) => {
     try {
         const { username, email, password, role } = req.body;
         
-        // Pengecekan manual standar (tanpa express-validator)
+        // Pengecekan manual standar
         if (!username || !email || !password || !role) {
             return res.status(400).json({ success: false, message: "Username, email, password, dan role harus diisi!" });
         }
@@ -92,13 +92,12 @@ app.post('/api/register', async (req, res) => {
 });
 
 // ==========================================
-// LOGIN (TELAH DIPERBAIKI UNTUK REGRESSION TESTING)
+// LOGIN
 // ==========================================
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        // 1. TAMBAHKAN VALIDASI INPUT BERIKUT AGAR TIDAK MEMICU ERROR UNDEFINED PADA JEST
         if (!username || !password) {
             return res.status(401).json({ success: false, message: 'Username dan password wajib diisi' });
         }
@@ -163,14 +162,12 @@ app.post('/api/refresh-token', async (req, res) => {
                 return res.status(403).json({ success: false, message: "Refresh token tidak valid atau kadaluarsa" });
             }
 
-            // Cek apakah refresh token cocok dengan yang ada di database
             const user = await User.findByPk(decoded.id);
 
             if (!user || user.refresh_token !== refreshToken) {
                 return res.status(403).json({ success: false, message: "Refresh token tidak sesuai" });
             }
 
-            // Generate access token baru (15 menit)
             const newAccessToken = jwt.sign(
                 { id: user.id, username: user.username, role: user.role },
                 process.env.JWT_SECRET || 'rahasia_negara',
@@ -194,7 +191,6 @@ app.post('/api/refresh-token', async (req, res) => {
 // ==========================================
 app.post('/api/logout', verifyToken, async (req, res) => {
     try {
-        // Hapus refresh token dari database
         await User.update(
             { refresh_token: null },
             { where: { id: req.user.id } }
@@ -208,7 +204,7 @@ app.post('/api/logout', verifyToken, async (req, res) => {
 });
 
 // ==========================================
-// RESET PASSWORD ENDPOINTS (SINKRON 100% DENGAN AXIOS FRONTEND)
+// RESET PASSWORD ENDPOINTS (SINKRON 100% DENGAN AXIOS FRONTEND & GMAIL)
 // ==========================================
 
 // STEP 1: Request OTP kode ke Email
@@ -233,13 +229,12 @@ app.post('/api/lupa-password', async (req, res) => {
         const generatedToken = Math.floor(100000 + Math.random() * 900000).toString();
         const tokenExpires = new Date(Date.now() + 15 * 60 * 1000); // Masa aktif 15 menit
 
-        // Update record token di database menggunakan format kolom snake_case
         await User.update(
             { reset_token: generatedToken, reset_token_expires: tokenExpires },
             { where: { id: user.id } }
         );
 
-        // GUNAKAN KODE INI (Lebih aman untuk Gmail)
+        // Setting Nodemailer menggunakan 'service' (Lebih kebal error untuk Gmail)
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -287,12 +282,10 @@ app.post('/api/verify-reset-token', async (req, res) => {
             return res.status(404).json({ success: false, message: "User tidak ditemukan" });
         }
 
-        // Pengecekan kecocokan token string secara presisi
         if (!user.reset_token || String(user.reset_token).trim() !== String(resetToken).trim()) {
             return res.status(401).json({ success: false, message: "Kode verifikasi salah!" });
         }
 
-        // Cek kedaluwarsa token
         if (new Date() > new Date(user.reset_token_expires)) {
             return res.status(401).json({ success: false, message: "Kode sudah kadaluarsa. Silakan request ulang." });
         }
@@ -331,7 +324,6 @@ app.put('/api/reset-password', async (req, res) => {
             return res.status(401).json({ success: false, message: "Token sudah expired. Silakan request token baru." });
         }
 
-        // Melakukan update password baru dan membersihkan token dari record user
         await User.update(
             { password: passwordBaru, reset_token: null, reset_token_expires: null },
             { where: { id: user.id } }
