@@ -208,10 +208,10 @@ app.post('/api/logout', verifyToken, async (req, res) => {
 });
 
 // ==========================================
-// RESET PASSWORD ENDPOINTS (PUBLIC)
+// RESET PASSWORD ENDPOINTS (SINKRON DENGAN AXIOS FRONTEND)
 // ==========================================
 
-// STEP 1: Request reset password
+// STEP 1: Request reset password (Menerima body: { username })
 app.post('/api/lupa-password', async (req, res) => {
     try {
         const { username } = req.body;
@@ -223,23 +223,28 @@ app.post('/api/lupa-password', async (req, res) => {
         const user = await User.findOne({ where: { username } });
         
         if (!user) {
-            return res.status(404).json({ success: false, message: "Username tidak ditemukan atau email belum terdaftar" });
+            return res.status(404).json({ success: false, message: "Username tidak ditemukan!" });
         }
 
         if (!user.email) {
             return res.status(400).json({ success: false, message: "Email belum terdaftar untuk akun ini. Hubungi admin." });
         }
 
-        const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
-        const tokenExpires = new Date(Date.now() + 15 * 60 * 1000); 
+        // Generate 6 digit angka OTP string
+        const generatedToken = Math.floor(100000 + Math.random() * 900000).toString();
+        const tokenExpires = new Date(Date.now() + 15 * 60 * 1000); // Masa aktif 15 menit
 
+        // Update database (Mencatat token & masa expired ke user terkait)
         await User.update(
-            { reset_token: resetToken, reset_token_expires: tokenExpires },
+            { reset_token: generatedToken, reset_token_expires: tokenExpires },
             { where: { id: user.id } }
         );
 
+        // Konfigurasi transporter nodemailer menggunakan variabel di .env
         const transporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+            port: parseInt(process.env.EMAIL_PORT, 10) || 465,
+            secure: process.env.EMAIL_PORT == 465, // True jika port 465, false jika port 587
             auth: {
                 user: process.env.EMAIL_USER, 
                 pass: process.env.EMAIL_PASS  
@@ -250,7 +255,12 @@ app.post('/api/lupa-password', async (req, res) => {
             from: `"KantinITH Support" <${process.env.EMAIL_USER}>`,
             to: user.email,
             subject: 'Kode Verifikasi Reset Password - KantinITH',
-            text: `Halo ${username},\n\nBerikut adalah kode verifikasi untuk reset password Anda:\n\n🔐 KODE: ${resetToken}\n\nKode ini berlaku selama 15 menit. Jangan bagikan kode ini ke siapa pun.\n\nJika Anda tidak melakukan permintaan ini, abaikan email ini.\n\nRegards,\nTim KantinITH`
+            html: `<h3>Halo ${username},</h3>
+                   <p>Berikut adalah kode verifikasi untuk reset password Anda:</p>
+                   <h2 style="color: #FF8C00; letter-spacing: 5px; font-size: 28px;">${generatedToken}</h2>
+                   <p>Kode ini berlaku selama 15 menit. Mohon tidak membagikan kode ini kepada siapa pun.</p>
+                   <br/>
+                   <p>Regards,<br/>Tim KantinITH</p>`
         };
 
         await transporter.sendMail(mailOptions);
@@ -266,20 +276,26 @@ app.post('/api/lupa-password', async (req, res) => {
     }
 });
 
-// STEP 1.5: Verifikasi Token saja
+// STEP 1.5: Verifikasi Token (Menerima body: { username, resetToken })
 app.post('/api/verify-reset-token', async (req, res) => {
     try {
         const { username, resetToken } = req.body;
         
+        if (!username || !resetToken) {
+            return res.status(400).json({ success: false, message: "Username dan kode verifikasi wajib diisi!" });
+        }
+
         const user = await User.findOne({ where: { username } });
         if (!user) {
             return res.status(404).json({ success: false, message: "User tidak ditemukan" });
         }
 
-        if (!user.reset_token || String(user.reset_token) !== String(resetToken)) {
+        // Trim dan konversi tipe data ke string untuk meminimalkan miss-match tipe data di DB
+        if (!user.reset_token || String(user.reset_token).trim() !== String(resetToken).trim()) {
             return res.status(401).json({ success: false, message: "Kode verifikasi salah!" });
         }
 
+        // Cek jika waktu sekarang sudah melewati limit kedaluwarsa token
         if (new Date() > new Date(user.reset_token_expires)) {
             return res.status(401).json({ success: false, message: "Kode sudah kadaluarsa. Silakan request ulang." });
         }
@@ -291,7 +307,7 @@ app.post('/api/verify-reset-token', async (req, res) => {
     }
 });
 
-// STEP 2: Verifikasi token dan update password di DB
+// STEP 2: Sinkronisasi pembaruan kata sandi (Menerima body: { username, resetToken, passwordBaru })
 app.put('/api/reset-password', async (req, res) => {
     try {
         const { username, resetToken, passwordBaru } = req.body;
@@ -310,7 +326,7 @@ app.put('/api/reset-password', async (req, res) => {
             return res.status(404).json({ success: false, message: "User tidak ditemukan" });
         }
 
-        if (!user.reset_token || String(user.reset_token) !== String(resetToken)) {
+        if (!user.reset_token || String(user.reset_token).trim() !== String(resetToken).trim()) {
             return res.status(401).json({ success: false, message: "Token tidak valid atau sudah kadaluarsa" });
         }
 
@@ -318,18 +334,22 @@ app.put('/api/reset-password', async (req, res) => {
             return res.status(401).json({ success: false, message: "Token sudah expired. Silakan request token baru." });
         }
 
+        // Menyimpan password baru dan membersihkan token dari database
         await User.update(
             { password: passwordBaru, reset_token: null, reset_token_expires: null },
             { where: { id: user.id } }
         );
         
-        res.json({ success: true, message: "Password berhasil direset! Silakan login dengan password baru." });
+        res.json({ success: true, message: "Kata sandi berhasil diperbarui! Silakan login dengan kata sandi baru." });
     } catch (err) {
         console.error("Error reset password:", err);
         res.status(500).json({ success: false, message: "Gagal mereset password" });
     }
 });
 
+// ==========================================
+// ROUTE MODUL LAINNYA
+// ==========================================
 app.use('/api/menu', menuRoutes);
 app.use('/api', orderRoutes); 
 app.use('/api', topupRoutes); 
@@ -447,13 +467,12 @@ app.get('/api/admin/users', verifyToken, async (req, res) => {
         }
 
         const users = await User.findAll({
-            // Pastikan menggunakan Op.ne (Not Equal)
             where: { is_active: { [Op.ne]: 0 } }, 
             attributes: ['id', 'username', 'role', 'status', 'saldo', 'is_active']
         });
         res.json(users);
     } catch (err) {
-        console.error("Error get all users:", err); // Pesan ini akan muncul di terminalmu
+        console.error("Error get all users:", err);
         res.status(500).json({ success: false, message: err.message });
     }
 });
@@ -519,10 +538,8 @@ app.patch('/api/admin/users/:id/saldo', verifyToken, async (req, res) => {
     }
 });
 
-// PASTIKAN BLOK INI SEPERTI INI DI index.js
 app.delete('/api/admin/users/:id', verifyToken, async (req, res) => {
     try {
-        // Kita gunakan logic update (soft delete) di dalam route DELETE
         await User.update({ is_active: 0 }, { where: { id: req.params.id } });
         res.json({ success: true, message: "User berhasil dinonaktifkan!" });
     } catch (err) {
@@ -531,7 +548,7 @@ app.delete('/api/admin/users/:id', verifyToken, async (req, res) => {
 });
 
 // ========================================================
-// DATABASE SYNC
+// DATABASE SYNC & SERVER DEPLOYMENT RUNTIME
 // ========================================================
 if (require.main === module) {
     sequelize.sync({ alter: true })
