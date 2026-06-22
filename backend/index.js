@@ -208,10 +208,10 @@ app.post('/api/logout', verifyToken, async (req, res) => {
 });
 
 // ==========================================
-// RESET PASSWORD ENDPOINTS (SINKRON DENGAN AXIOS FRONTEND)
+// RESET PASSWORD ENDPOINTS (SINKRON 100% DENGAN AXIOS FRONTEND)
 // ==========================================
 
-// STEP 1: Request reset password (Menerima body: { username })
+// STEP 1: Request OTP kode ke Email
 app.post('/api/lupa-password', async (req, res) => {
     try {
         const { username } = req.body;
@@ -230,21 +230,20 @@ app.post('/api/lupa-password', async (req, res) => {
             return res.status(400).json({ success: false, message: "Email belum terdaftar untuk akun ini. Hubungi admin." });
         }
 
-        // Generate 6 digit angka OTP string
         const generatedToken = Math.floor(100000 + Math.random() * 900000).toString();
         const tokenExpires = new Date(Date.now() + 15 * 60 * 1000); // Masa aktif 15 menit
 
-        // Update database (Mencatat token & masa expired ke user terkait)
+        // Update record token di database menggunakan format kolom snake_case
         await User.update(
             { reset_token: generatedToken, reset_token_expires: tokenExpires },
             { where: { id: user.id } }
         );
 
-        // Konfigurasi transporter nodemailer menggunakan variabel di .env
+        // Konfigurasi nodemailer menggunakan parameter file .env Anda
         const transporter = nodemailer.createTransport({
             host: process.env.EMAIL_HOST || 'smtp.gmail.com',
             port: parseInt(process.env.EMAIL_PORT, 10) || 465,
-            secure: process.env.EMAIL_PORT == 465, // True jika port 465, false jika port 587
+            secure: process.env.EMAIL_PORT == 465,
             auth: {
                 user: process.env.EMAIL_USER, 
                 pass: process.env.EMAIL_PASS  
@@ -256,9 +255,9 @@ app.post('/api/lupa-password', async (req, res) => {
             to: user.email,
             subject: 'Kode Verifikasi Reset Password - KantinITH',
             html: `<h3>Halo ${username},</h3>
-                   <p>Berikut adalah kode verifikasi untuk reset password Anda:</p>
+                   <p>Berikut adalah kode verifikasi untuk mereset kata sandi akun Anda:</p>
                    <h2 style="color: #FF8C00; letter-spacing: 5px; font-size: 28px;">${generatedToken}</h2>
-                   <p>Kode ini berlaku selama 15 menit. Mohon tidak membagikan kode ini kepada siapa pun.</p>
+                   <p>Kode ini hanya berlaku selama 15 menit. Jangan bagikan kode ini kepada siapa pun.</p>
                    <br/>
                    <p>Regards,<br/>Tim KantinITH</p>`
         };
@@ -276,7 +275,7 @@ app.post('/api/lupa-password', async (req, res) => {
     }
 });
 
-// STEP 1.5: Verifikasi Token (Menerima body: { username, resetToken })
+// STEP 1.5: Verifikasi Kode OTP dari form Frontend
 app.post('/api/verify-reset-token', async (req, res) => {
     try {
         const { username, resetToken } = req.body;
@@ -290,24 +289,24 @@ app.post('/api/verify-reset-token', async (req, res) => {
             return res.status(404).json({ success: false, message: "User tidak ditemukan" });
         }
 
-        // Trim dan konversi tipe data ke string untuk meminimalkan miss-match tipe data di DB
+        // Pengecekan kecocokan token string secara presisi
         if (!user.reset_token || String(user.reset_token).trim() !== String(resetToken).trim()) {
             return res.status(401).json({ success: false, message: "Kode verifikasi salah!" });
         }
 
-        // Cek jika waktu sekarang sudah melewati limit kedaluwarsa token
+        // Cek kedaluwarsa token
         if (new Date() > new Date(user.reset_token_expires)) {
             return res.status(401).json({ success: false, message: "Kode sudah kadaluarsa. Silakan request ulang." });
         }
 
-        res.json({ success: true, message: "Kode benar! Lanjut ke halaman ganti password." });
+        res.json({ success: true, message: "Kode benar! Silakan lanjut masukkan kata sandi baru." });
     } catch (err) {
         console.error("Error verify token:", err);
         res.status(500).json({ success: false, message: "Terjadi kesalahan pada server" });
     }
 });
 
-// STEP 2: Sinkronisasi pembaruan kata sandi (Menerima body: { username, resetToken, passwordBaru })
+// STEP 2: Update Kata Sandi Baru ke Database
 app.put('/api/reset-password', async (req, res) => {
     try {
         const { username, resetToken, passwordBaru } = req.body;
@@ -334,7 +333,7 @@ app.put('/api/reset-password', async (req, res) => {
             return res.status(401).json({ success: false, message: "Token sudah expired. Silakan request token baru." });
         }
 
-        // Menyimpan password baru dan membersihkan token dari database
+        // Melakukan update password baru dan membersihkan token dari record user
         await User.update(
             { password: passwordBaru, reset_token: null, reset_token_expires: null },
             { where: { id: user.id } }
@@ -370,7 +369,6 @@ app.get('/api/users/:id', verifyToken, async (req, res) => {
 // ==========================================
 app.put('/api/users/:id/profile', verifyToken, async (req, res) => {
     try {
-        // Validasi akses - user hanya bisa update profile sendiri
         if (req.user.id !== parseInt(req.params.id)) {
             return res.status(403).json({ success: false, message: "Akses ditolak! Anda hanya bisa mengubah profile Anda sendiri." });
         }
@@ -382,7 +380,6 @@ app.put('/api/users/:id/profile', verifyToken, async (req, res) => {
             return res.status(404).json({ success: false, message: "User tidak ditemukan" });
         }
 
-        // Validasi username
         if (username && username !== user.username) {
             const existingUsername = await User.findOne({ where: { username } });
             if (existingUsername) {
@@ -390,7 +387,6 @@ app.put('/api/users/:id/profile', verifyToken, async (req, res) => {
             }
         }
 
-        // Validasi email
         if (email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
@@ -405,14 +401,12 @@ app.put('/api/users/:id/profile', verifyToken, async (req, res) => {
             }
         }
 
-        // Update data
         const updateData = {};
         if (username) updateData.username = username;
         if (email) updateData.email = email;
 
         await User.update(updateData, { where: { id: req.params.id } });
 
-        // Ambil data updated
         const updatedUser = await User.findByPk(req.params.id, { attributes: ['id', 'username', 'email', 'role', 'saldo'] });
 
         res.json({
