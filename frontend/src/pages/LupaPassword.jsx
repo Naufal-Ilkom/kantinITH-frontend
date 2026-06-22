@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+// Konfigurasi API endpoint lokal atau produksi
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-const LupaPassword = ({ onGoToLogin }) => {
+const LupaPassword = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1); // 1: username, 2: token verification, 3: password baru
   const [username, setUsername] = useState('');
@@ -16,7 +17,7 @@ const LupaPassword = ({ onGoToLogin }) => {
   const [successMsg, setSuccessMsg] = useState('');
   const [timeLeft, setTimeLeft] = useState(900); // 15 menit = 900 detik
 
-  // Timer untuk token expiration
+  // Timer hitung mundur untuk masa kedaluwarsa token di Step 2
   useEffect(() => {
     if (step === 2 && timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
@@ -30,13 +31,13 @@ const LupaPassword = ({ onGoToLogin }) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // STEP 1: Request token ke email
+  // STEP 1: Request token ke email (POST)
   const handleSubmitUsername = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setErrorMsg('');
     setSuccessMsg('');
-    setResetToken(''); // Clear token input
+    setResetToken('');
 
     try {
       const response = await axios.post(`${API_URL}/api/lupa-password`, {
@@ -45,18 +46,17 @@ const LupaPassword = ({ onGoToLogin }) => {
 
       if (response.data.success) {
         setSuccessMsg(response.data.message);
-        // Pindah ke step 2 (Input Kode)
-        setStep(2);
-        setTimeLeft(900); // Reset timer
+        setStep(2); // Pindah ke form input kode verifikasi OTP
+        setTimeLeft(900); // Reset timer 15 menit
       }
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Username tidak ditemukan atau terjadi kesalahan');
+      setErrorMsg(err.response?.data?.message || 'Username tidak ditemukan atau terjadi kesalahan server');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // STEP 2: Verifikasi token dari email ke Backend (DIPERBAIKI DI SINI)
+  // STEP 2: Verifikasi token OTP dari email (POST)
   const handleSubmitToken = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -68,25 +68,23 @@ const LupaPassword = ({ onGoToLogin }) => {
 
     setIsLoading(true);
     try {
-      // 1. Tanya Backend apakah kodenya benar
       const response = await axios.post(`${API_URL}/api/verify-reset-token`, {
         username: username,
         resetToken: resetToken
       });
 
-      // 2. Jika Backend bilang benar, baru pindah ke step 3
       if (response.data.success) {
-        setStep(3);
+        setSuccessMsg(response.data.message);
+        setStep(3); // Pindah ke form ganti kata sandi baru
       }
     } catch (err) {
-      // 3. Jika Backend menolak (kode salah/expired), gagalkan dan munculkan pesan error
       setErrorMsg(err.response?.data?.message || 'Kode verifikasi salah atau kadaluarsa');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // STEP 3: Reset password dengan token
+  // STEP 3: Update kata sandi baru ke DB (PUT)
   const handleSubmitPasswordBaru = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -112,11 +110,11 @@ const LupaPassword = ({ onGoToLogin }) => {
 
       if (response.data.success) {
         alert(response.data.message);
-        navigate('/login');
+        navigate('/login'); // Berhasil, arahkan ke login utama
       }
     } catch (err) {
       setErrorMsg(err.response?.data?.message || 'Gagal mereset kata sandi');
-      setStep(2); // Kembali ke step verifikasi token jika gagal
+      setStep(2); // Kembali ke step verifikasi kode jika ditolak backend
     } finally {
       setIsLoading(false);
     }
@@ -133,12 +131,12 @@ const LupaPassword = ({ onGoToLogin }) => {
         maxWidth: '450px', textAlign: 'center', border: '1px solid #eee'
       }}>
         
-        {/* LOGO */}
+        {/* LOGO BRAND */}
         <div style={{ fontSize: '32px', fontWeight: '800', color: '#333', marginBottom: '10px' }}>
           Kantin<span style={{ color: '#FF8C00' }}>ITH</span>
         </div>
 
-        {/* STEP INDICATOR */}
+        {/* STEP ALUR INDIKATOR BULAT */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '30px' }}>
           {[1, 2, 3].map(num => (
             <div key={num} style={{
@@ -153,22 +151,32 @@ const LupaPassword = ({ onGoToLogin }) => {
           ))}
         </div>
 
-        {/* STEP 1: USERNAME */}
+        {/* ALUR BLOK NOTIFIKASI */}
+        {successMsg && step === 1 && (
+          <div style={{ 
+            background: '#e6fffa', color: '#234e52', padding: '12px', 
+            borderRadius: '8px', marginBottom: '20px', fontSize: '14px', textAlign: 'left'
+          }}>
+            {successMsg}
+          </div>
+        )}
+
+        {errorMsg && (
+          <div style={{ 
+            background: '#fee2e2', color: '#c53030', padding: '12px', 
+            borderRadius: '8px', marginBottom: '20px', fontSize: '14px', textAlign: 'left'
+          }}>
+            {errorMsg}
+          </div>
+        )}
+
+        {/* VIEW RENDER - STEP 1 */}
         {step === 1 ? (
           <>
             <h2 style={{ fontSize: '24px', color: '#333', margin: '20px 0 10px 0' }}>🔐 Lupa Kata Sandi?</h2>
             <p style={{ color: '#777', fontSize: '15px', marginBottom: '30px', lineHeight: '1.6' }}>
               Masukkan username Anda. Kami akan mengirim kode verifikasi ke email terdaftar.
             </p>
-
-            {errorMsg && (
-              <div style={{ 
-                background: '#fee2e2', color: '#c53030', padding: '12px', 
-                borderRadius: '8px', marginBottom: '20px', fontSize: '14px' 
-              }}>
-                {errorMsg}
-              </div>
-            )}
 
             <form onSubmit={handleSubmitUsername} style={{ textAlign: 'left' }}>
               <div style={{ marginBottom: '25px' }}>
@@ -197,7 +205,7 @@ const LupaPassword = ({ onGoToLogin }) => {
           </>
         ) 
         
-        // STEP 2: TOKEN VERIFICATION
+        // VIEW RENDER - STEP 2
         : step === 2 ? (
           <>
             <h2 style={{ fontSize: '24px', color: '#333', margin: '20px 0 10px 0' }}>📧 Cek Email Anda</h2>
@@ -208,32 +216,21 @@ const LupaPassword = ({ onGoToLogin }) => {
               ⏰ Kode berlaku: {formatTime(timeLeft)}
             </p>
 
-            {errorMsg && (
-              <div style={{ 
-                background: '#fee2e2', color: '#c53030', padding: '12px', 
-                borderRadius: '8px', marginBottom: '20px', fontSize: '14px' 
-              }}>
-                {errorMsg}
-              </div>
-            )}
-
             <form onSubmit={handleSubmitToken} style={{ textAlign: 'left' }}>
               <div style={{ marginBottom: '25px' }}>
                 <label style={{ display: 'block', marginBottom: '10px', fontWeight: '700', fontSize: '14px', color: '#555' }}>Kode Verifikasi 6 Digit</label>
                 <input 
                   type="text" 
                   required 
-                  placeholder="Masukkan 6 digit dari email" 
+                  placeholder="------" 
                   value={resetToken} 
                   onChange={(e) => setResetToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   maxLength="6"
                   style={{ 
                     width: '100%', padding: '16px', borderRadius: '14px', 
                     border: '2px solid #f0f0f0', boxSizing: 'border-box', 
-                    fontFamily: 'monospace', fontSize: '18px', transition: '0.3s',
-                    textAlign: 'center',
-                    letterSpacing: '8px',
-                    backgroundColor: '#fafafa'
+                    fontFamily: 'monospace', fontSize: '20px', transition: '0.3s',
+                    textAlign: 'center', letterSpacing: '8px', backgroundColor: '#fafafa'
                   }} 
                   onFocus={(e) => { 
                     e.target.style.borderColor = '#FF8C00'; 
@@ -244,7 +241,7 @@ const LupaPassword = ({ onGoToLogin }) => {
                     e.target.style.backgroundColor = '#fafafa';
                   }}
                 />
-                <p style={{ fontSize: '12px', color: '#999', marginTop: '8px' }}>Cek folder email masuk atau spam</p>
+                <p style={{ fontSize: '12px', color: '#999', marginTop: '8px' }}>Cek folder kotak masuk atau spam email Anda</p>
               </div>
 
               <button type="submit" disabled={isLoading} style={{ 
@@ -260,27 +257,18 @@ const LupaPassword = ({ onGoToLogin }) => {
               marginTop: '20px', background: 'none', border: 'none', color: '#888', fontWeight: '600', 
               fontSize: '15px', cursor: 'pointer', fontFamily: 'inherit'
             }}>
-              ← Kembali
+              ← Kembali ke Step 1
             </button>
           </>
         )
         
-        // STEP 3: NEW PASSWORD
+        // VIEW RENDER - STEP 3
         : (
           <>
             <h2 style={{ fontSize: '24px', color: '#333', margin: '20px 0 10px 0' }}>🔑 Kata Sandi Baru</h2>
             <p style={{ color: '#777', fontSize: '15px', marginBottom: '30px', lineHeight: '1.6' }}>
-              Buat kata sandi baru untuk akun <strong>{username}</strong>
+              Buat kata sandi baru yang aman untuk akun <strong>{username}</strong>
             </p>
-
-            {errorMsg && (
-              <div style={{ 
-                background: '#fee2e2', color: '#c53030', padding: '12px', 
-                borderRadius: '8px', marginBottom: '20px', fontSize: '14px' 
-              }}>
-                {errorMsg}
-              </div>
-            )}
 
             <form onSubmit={handleSubmitPasswordBaru} style={{ textAlign: 'left' }}>
               <div style={{ marginBottom: '20px' }}>
@@ -321,17 +309,10 @@ const LupaPassword = ({ onGoToLogin }) => {
                 {isLoading ? 'Memproses...' : 'Reset Kata Sandi'}
               </button>
             </form>
-
-            <button onClick={() => setStep(2)} style={{ 
-              marginTop: '20px', background: 'none', border: 'none', color: '#888', fontWeight: '600', 
-              fontSize: '15px', cursor: 'pointer', fontFamily: 'inherit'
-            }}>
-              ← Kembali
-            </button>
           </>
         )}
 
-        {/* TOMBOL KEMBALI KE LOGIN */}
+        {/* LINK NAVIGASI BAWAH */}
         <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #f0f0f0' }}>
           <button onClick={() => navigate('/login')} style={{ 
             background: 'none', border: 'none', color: '#888', fontWeight: '600', 
