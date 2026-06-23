@@ -1,1 +1,1 @@
-﻿# KantinITH — Backend
+﻿# KantinITH — Frontend
